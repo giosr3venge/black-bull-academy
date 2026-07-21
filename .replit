@@ -1,0 +1,9 @@
+run = "npm run dev"
+entrypoint = "app/layout.tsx"
+modules = ["nodejs-20"]
+hidden = [".config", "package-lock.json", "node_modules", ".next"]
+[nix]
+channel = "stable-24_05"
+[deployment]
+run = ["sh", "-c", "npm run start"]
+build = ["sh", "-c", "npm run build"]
