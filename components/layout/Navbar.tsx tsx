@@ -1,0 +1,86 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, GraduationCap, BookOpen, User, Library, Send, Home } from 'lucide-react';
+import { WalletButton } from '@/components/wallet/WalletButton';
+
+const navLinks = [
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/courses', label: 'Courses', icon: BookOpen },
+  { href: '/profile', label: 'My Academy', icon: User },
+  { href: '/resources', label: 'Resources', icon: Library },
+  { href: '/submit', label: 'Submit', icon: Send },
+];
+
+export function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  return (
+    <nav className="sticky top-0 z-50 bg-bull-black/70 backdrop-blur-2xl border-b border-bull-border/50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-18 py-3">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative w-11 h-11 bg-gradient-to-br from-bull-neon-dark to-bull-black rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform border border-bull-neon/20 neon-glow">
+              <GraduationCap className="w-6 h-6 text-bull-neon" />
+              <div className="absolute inset-0 bg-bull-neon/10 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-lg font-bold text-white leading-tight tracking-tight">Black Bull</h1>
+              <p className="text-xs text-bull-neon font-medium -mt-0.5 tracking-wider uppercase">Academy</p>
+            </div>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              const Icon = link.icon;
+              return (
+                <Link key={link.href} href={link.href}
+                  className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-bull-neon' : 'text-bull-text-dim hover:text-bull-text'}`}>
+                  <span className="flex items-center gap-1.5"><Icon className="w-4 h-4" />{link.label}</span>
+                  {isActive && (
+                    <motion.div layoutId="navbar-indicator" className="absolute inset-0 bg-bull-neon/5 rounded-lg border border-bull-neon/20"
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }} />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:block"><WalletButton /></div>
+            <button onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2.5 rounded-xl bg-bull-surface border border-bull-border text-bull-text hover:border-bull-neon/30 transition-all">
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="md:hidden border-t border-bull-border/50 bg-bull-black/95 backdrop-blur-2xl overflow-hidden">
+            <div className="px-4 py-4 space-y-1">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                const Icon = link.icon;
+                return (
+                  <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-bull-neon/5 text-bull-neon border border-bull-neon/20' : 'text-bull-text-dim hover:bg-bull-surface hover:text-bull-text'}`}>
+                    <Icon className="w-5 h-5" />{link.label}
+                  </Link>
+                );
+              })}
+              <div className="pt-3 border-t border-bull-border/50 sm:hidden"><WalletButton /></div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+}
